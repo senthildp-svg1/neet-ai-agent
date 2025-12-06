@@ -1,7 +1,6 @@
 import os
 import google.generativeai as genai
 from pinecone import Pinecone
-from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,7 +13,15 @@ class RAGEngine:
         
         self.pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
         self.index = self.pc.Index("neet-knowledge-base")
-        self.embedder = SentenceTransformer('all-MiniLM-L6-v2')
+        self._embedder = None  # Lazy load to save memory
+
+    @property
+    def embedder(self):
+        """Lazy load the embedding model only when needed"""
+        if self._embedder is None:
+            from sentence_transformers import SentenceTransformer
+            self._embedder = SentenceTransformer('all-MiniLM-L6-v2')
+        return self._embedder
 
     def search(self, query: str, top_k=3):
         query_embedding = self.embedder.encode(query).tolist()
