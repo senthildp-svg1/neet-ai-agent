@@ -1,0 +1,22 @@
+CHAPTER 5: LAWS OF MOTION
+
+5.1 Introduction
+Aristotle's view that a force is necessary to keep a body in uniform motion is wrong. A force is necessary in practice to counter the opposing force of friction.
+
+5.2 Newton's First Law of Motion
+Everybody continues in its state of rest or of uniform motion in a straight line unless compelled by some external force to act otherwise.
+
+5.3 Newton's Second Law of Motion
+The rate of change of momentum of a body is directly proportional to the applied force and takes place in the direction in which the force acts.
+F = ma, where F is the net external force on the body, m is its mass and a is its acceleration.
+
+5.4 Newton's Third Law of Motion
+To every action, there is always an equal and opposite reaction.
+When a body A exerts a force on body B, body B exerts an equal and opposite force on body A.
+
+5.5 Conservation of Momentum
+The sum of momentum of the two bodies does not change during collision provided there is no external force acting.
+m1u1 + m2u2 = m1v1 + m2v2
+
+5.6 Friction
+Friction is the force which opposes the relative motion between two surfaces in contact. The force of static friction is a self-adjusting force up to the limiting friction, fs ≤ μsN, where μs is the coefficient of static friction and N is the normal force.
