@@ -28,8 +28,8 @@ class RAGEngine:
                 "threshold": "BLOCK_NONE"
             },
         ]
-        # Use gemini-1.5-flash for better stability and free tier limits
-        self.model = genai.GenerativeModel('gemini-1.5-flash', safety_settings=safety_settings)
+        # Use gemini-flash-latest (confirmed available in list)
+        self.model = genai.GenerativeModel('gemini-flash-latest', safety_settings=safety_settings)
         
         self.pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
         self.index = self.pc.Index("neet-knowledge-base")
