@@ -14,7 +14,9 @@ export const checkHealth = async () => {
 
 export const sendMessage = async (message) => {
     try {
-        const response = await axios.post(`${API_URL}/chat`, { message });
+        const response = await axios.post(`${API_URL}/chat`, { message }, {
+            timeout: 120000  // 120 seconds to handle cold start + AI processing
+        });
         return response.data;
     } catch (error) {
         console.error("Chat request failed:", error);
