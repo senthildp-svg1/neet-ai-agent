@@ -13,24 +13,28 @@ class RAGEngine:
         
         self.pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
         self.index = self.pc.Index("neet-knowledge-base")
-        self._embedder = None  # Lazy load to save memory
-
-    @property
-    def embedder(self):
-        """Lazy load the embedding model only when needed"""
-        if self._embedder is None:
-            from sentence_transformers import SentenceTransformer
-            self._embedder = SentenceTransformer('all-MiniLM-L6-v2')
-        return self._embedder
-
+    
     def search(self, query: str, top_k=3):
-        query_embedding = self.embedder.encode(query).tolist()
-        results = self.index.query(
-            vector=query_embedding,
-            top_k=top_k,
-            include_metadata=True
-        )
-        return results['matches']
+        """Use Gemini's embedding API instead of local model to save memory"""
+        try:
+            # Use Gemini's embedding model (no local memory needed!)
+            result = genai.embed_content(
+                model="models/text-embedding-004",
+                content=query,
+                task_type="retrieval_query"
+            )
+            query_embedding = result['embedding']
+            
+            results = self.index.query(
+                vector=query_embedding,
+                top_k=top_k,
+                include_metadata=True
+            )
+            return results['matches']
+        except Exception as e:
+            print(f"Search error: {e}")
+            # Fallback: return empty matches if embedding fails
+            return []
 
     def generate_answer(self, query: str, context_matches):
         context_str = "\n\n".join([m['metadata']['text'] for m in context_matches])
