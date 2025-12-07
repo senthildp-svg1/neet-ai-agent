@@ -1,16 +1,18 @@
 import os
 from pinecone import Pinecone
-from sentence_transformers import SentenceTransformer
+import google.generativeai as genai
 from dotenv import load_dotenv
 from pypdf import PdfReader
 
 load_dotenv()
 
+# Initialize Gemini
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
 # Initialize Pinecone
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
 index_name = "neet-knowledge-base"
 index = pc.Index(index_name)
-model = SentenceTransformer('all-MiniLM-L6-v2')
 
 def extract_text_from_pdf(pdf_path):
     """Extract text from PDF file"""
@@ -58,17 +60,27 @@ def ingest_file(file_path):
     vectors = []
     for i, chunk in enumerate(chunks):
         if chunk.strip():  # Skip empty chunks
-            embedding = model.encode(chunk).tolist()
-            chunk_id = f"{os.path.basename(file_path).replace('.', '_')}_{i}"
-            vectors.append({
-                "id": chunk_id,
-                "values": embedding,
-                "metadata": {
-                    "text": chunk,
-                    "source": os.path.basename(file_path),
-                    "chunk_index": i
-                }
-            })
+            try:
+                # Use Gemini embedding (768 dims)
+                result = genai.embed_content(
+                    model="models/text-embedding-004",
+                    content=chunk,
+                    task_type="retrieval_document"
+                )
+                embedding = result['embedding']
+                
+                chunk_id = f"{os.path.basename(file_path).replace('.', '_')}_{i}"
+                vectors.append({
+                    "id": chunk_id,
+                    "values": embedding,
+                    "metadata": {
+                        "text": chunk,
+                        "source": os.path.basename(file_path),
+                        "chunk_index": i
+                    }
+                })
+            except Exception as e:
+                print(f"⚠️  Error embedding chunk {i}: {e}")
     
     # Batch upsert
     batch_size = 100

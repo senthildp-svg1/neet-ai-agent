@@ -11,11 +11,7 @@ app = FastAPI(title="NEET AI Agent API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",  # Local development
-        "https://neet-ai-agent.vercel.app",  # Main production URL
-    ],
-    allow_origin_regex=r"https://.*\.vercel\.app",  # All Vercel preview deployments
+    allow_origins=["*"],  # Allow ALL origins to fix CORS issues once and for all
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
