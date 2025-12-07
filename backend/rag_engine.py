@@ -15,16 +15,22 @@ class RAGEngine:
         self.index = self.pc.Index("neet-knowledge-base")
     
     def search(self, query: str, top_k=3):
-        """Use Gemini's embedding API instead of local model to save memory"""
+        """Load model only when needed, then immediately clean up"""
+        import gc
+        from sentence_transformers import SentenceTransformer
+        
         try:
-            # Use Gemini's embedding model (no local memory needed!)
-            result = genai.embed_content(
-                model="models/text-embedding-004",
-                content=query,
-                task_type="retrieval_query"
-            )
-            query_embedding = result['embedding']
+            # Load model temporarily
+            embedder = SentenceTransformer('all-MiniLM-L6-v2')
             
+            # Generate embedding
+            query_embedding = embedder.encode(query).tolist()
+            
+            # Immediately delete model and free memory
+            del embedder
+            gc.collect()
+            
+            # Query Pinecone
             results = self.index.query(
                 vector=query_embedding,
                 top_k=top_k,
@@ -33,7 +39,7 @@ class RAGEngine:
             return results['matches']
         except Exception as e:
             print(f"Search error: {e}")
-            # Fallback: return empty matches if embedding fails
+            # Fallback: return empty matches if search fails
             return []
 
     def generate_answer(self, query: str, context_matches):
