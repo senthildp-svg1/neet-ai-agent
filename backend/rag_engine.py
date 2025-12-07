@@ -9,7 +9,26 @@ class RAGEngine:
     def __init__(self):
         self.api_key = os.getenv("GEMINI_API_KEY")
         genai.configure(api_key=self.api_key)
-        self.model = genai.GenerativeModel('gemini-2.0-flash')
+        # Configure safety settings to avoid blocking educational content
+        safety_settings = [
+            {
+                "category": "HARM_CATEGORY_HARASSMENT",
+                "threshold": "BLOCK_NONE"
+            },
+            {
+                "category": "HARM_CATEGORY_HATE_SPEECH",
+                "threshold": "BLOCK_NONE"
+            },
+            {
+                "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                "threshold": "BLOCK_NONE"
+            },
+            {
+                "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                "threshold": "BLOCK_NONE"
+            },
+        ]
+        self.model = genai.GenerativeModel('gemini-2.0-flash', safety_settings=safety_settings)
         
         self.pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
         self.index = self.pc.Index("neet-knowledge-base")
