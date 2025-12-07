@@ -49,4 +49,7 @@ async def chat(request: ChatRequest):
         
         return result
     except Exception as e:
+        import traceback
+        traceback.print_exc()  # Print full traceback to Render logs
+        print(f"❌ Error processing request: {e}")
         raise HTTPException(status_code=500, detail=str(e))

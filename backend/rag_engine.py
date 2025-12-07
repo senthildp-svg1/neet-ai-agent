@@ -58,8 +58,15 @@ INSTRUCTIONS:
 
 Answer the question clearly and simply:"""
         
-        response = self.model.generate_content(prompt)
-        return {
-            "answer": response.text,
-            "sources": list(set(sources))
-        }
+        try:
+            response = self.model.generate_content(prompt)
+            return {
+                "answer": response.text,
+                "sources": list(set(sources))
+            }
+        except Exception as e:
+            print(f"Generation error: {e}")
+            return {
+                "answer": "I'm sorry, I couldn't generate an answer due to safety filters or an API error. Please try rephrasing your question.",
+                "sources": []
+            }
