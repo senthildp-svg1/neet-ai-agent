@@ -32,3 +32,7 @@ backend/data/biology_*/
 
 # Keep sample files
 !backend/data/sample_*.txt
+backend/generate_antigravity_pdf.py
+backend/generate_azure_ai_pdf.py
+backend/generate_sports_pdf.py
+backend/generate_usecase_pdf.py
